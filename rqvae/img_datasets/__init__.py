@@ -17,7 +17,7 @@ import os
 import torch
 from torch.utils.data import Subset
 import torchvision
-from torchvision.datasets import ImageNet
+from torchvision.datasets import ImageNet, ImageFolder
 
 from .lsun import LSUNClass
 from .ffhq import FFHQ
@@ -34,8 +34,18 @@ def create_dataset(config, is_eval=False, logger=None):
 
     if config.dataset.type == 'imagenet':
         root = root if root else 'data/imagenet'
-        dataset_trn = ImageNet(root, split='train', transform=transforms_trn)
-        dataset_val = ImageNet(root, split='val', transform=transforms_val)
+        # Check if this is an ImageFolder structure (has train/ and val/ dirs)
+        # or standard ImageNet format (requires devkit)
+        train_path = os.path.join(root, 'train')
+        val_path = os.path.join(root, 'val')
+        if os.path.isdir(train_path) and os.path.isdir(val_path):
+            # Use ImageFolder for subset datasets like ImageNet100
+            dataset_trn = ImageFolder(train_path, transform=transforms_trn)
+            dataset_val = ImageFolder(val_path, transform=transforms_val)
+        else:
+            # Use standard ImageNet loader (requires devkit)
+            dataset_trn = ImageNet(root, split='train', transform=transforms_trn)
+            dataset_val = ImageNet(root, split='val', transform=transforms_val)
     elif config.dataset.type == 'imagenet_u':
         root = root if root else 'data/imagenet'
 
