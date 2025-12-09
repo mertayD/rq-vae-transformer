@@ -108,7 +108,7 @@ main() {
     } > "${SUMMARY_LOG}"
 
     for exp_name in "${EXPERIMENT_ORDER[@]}"; do
-        ((exp_num++))
+        exp_num=$((exp_num + 1))
 
         local config_file="${CONFIG_DIR}/${EXPERIMENTS[$exp_name]}"
         local checkpoint_dir="${CHECKPOINT_BASE}/${exp_name}"
