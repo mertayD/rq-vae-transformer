@@ -132,7 +132,7 @@ main() {
         # Run training
         log "Starting training..."
 
-        if torchrun \
+        if python -m torch.distributed.launch \
             --nproc_per_node="${NUM_GPUS}" \
             "${BASE_DIR}/main_stage1.py" \
             -m "${config_file}" \
