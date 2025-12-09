@@ -54,12 +54,14 @@ class RQVAE(Stage1Model):
             code_shape = kwargs['code_shape']
             shared_codebook = kwargs['shared_codebook']
             restart_unused_codes = kwargs['restart_unused_codes']
+            commitment_weights = kwargs.get('commitment_weights', None)
             self.quantizer = RQBottleneck(latent_shape=latent_shape,
                                           code_shape=code_shape,
                                           n_embed=n_embed,
                                           decay=decay,
                                           shared_codebook=shared_codebook,
                                           restart_unused_codes=restart_unused_codes,
+                                          commitment_weights=commitment_weights,
                                           )
             self.code_shape = code_shape
         else:

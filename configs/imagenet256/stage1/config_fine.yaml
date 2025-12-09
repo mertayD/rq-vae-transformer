@@ -1,5 +1,10 @@
+# RQ-VAE Training Config: Fine-First (Emphasize Later Codebooks)
+# commitment_weights: [0.5, 1.0, 2.0, 4.0]
+# Higher weight on fine/later codebooks for better detail preservation
+
 dataset:
   type: imagenet
+  root: /lambda/nfs/rqvae-fs/imagenet/imagenet100
   transforms:
     type: imagenet256x256
 
@@ -10,12 +15,12 @@ arch:
     bottleneck_type: rq
     embed_dim: 256
     n_embed: 16384
-    latent_shape: [ 8, 8, 256 ]  # could be inferred: H=W=resolution / (2 ** num_down), D=embed_dim
+    latent_shape: [ 8, 8, 256 ]
     code_shape: [ 8, 8, 4 ]
     shared_codebook: true
     decay: 0.99
     restart_unused_codes: true
-    commitment_weights: [1.0, 1.0, 1.0, 1.0]  # per-depth weights for commitment loss
+    commitment_weights: [0.5, 1.0, 2.0, 4.0]
 
     loss_type: mse
     latent_loss_weight: 0.25
@@ -31,16 +36,15 @@ arch:
     attn_resolutions: [ 8 ]
     dropout: 0.00
   checkpointing: true
- 
+
 
 optimizer:
-  # Original VQ-GAN: lr = 4.5e-06 * (batch size) -> 5.4e-5 for batch size 12
   type: adam
   init_lr: 4.0e-5
   weight_decay: 0.0
   betas: [0.5, 0.9]
   warmup:
-    epoch: 0.5  # 5% of total epochs
+    epoch: 0.5
     multiplier: 1
     buffer_epoch: 0
     min_lr: 4.0e-5
@@ -50,7 +54,7 @@ optimizer:
 experiment:
   batch_size: 32
   epochs: 10
-  save_ckpt_freq: 5
+  save_ckpt_freq: 2
   test_freq: 1
 
 gan:

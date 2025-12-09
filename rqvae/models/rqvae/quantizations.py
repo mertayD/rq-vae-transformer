@@ -168,9 +168,13 @@ class RQBottleneck(nn.Module):
                  decay=0.99,
                  shared_codebook=False,
                  restart_unused_codes=True,
-                 commitment_loss='cumsum'
+                 commitment_loss='cumsum',
+                 commitment_weights=None
                  ):
         super().__init__()
+
+        # Store commitment weights (default to uniform if not provided)
+        self.commitment_weights = commitment_weights
 
         if not len(code_shape) == len(latent_shape) == 3:
             raise ValueError("incompatible code shape or latent shape")
@@ -274,24 +278,30 @@ class RQBottleneck(nn.Module):
         x_reshaped = self.to_code_shape(x)
         quant_list, codes = self.quantize(x_reshaped)
 
-        commitment_loss = self.compute_commitment_loss(x_reshaped, quant_list)
+        commitment_loss = self.compute_commitment_loss(
+            x_reshaped, quant_list, weights=self.commitment_weights
+        )
         quants_trunc = self.to_latent_shape(quant_list[-1])
         quants_trunc = x + (quants_trunc - x).detach()
 
         return quants_trunc, commitment_loss, codes
     
-    def compute_commitment_loss(self, x, quant_list):
+    def compute_commitment_loss(self, x, quant_list, weights=None):
         r"""
         Compute the commitment loss for the residual quantization.
         The loss is iteratively computed by aggregating quantized features.
         """
+        if weights is None:
+            weights = [1.0, 1.0, 1.0, 1.0]
+
         loss_list = []
         
         for idx, quant in enumerate(quant_list):
-            partial_loss = (x-quant.detach()).pow(2.0).mean()
-            loss_list.append(partial_loss)
-        
-        commitment_loss = torch.mean(torch.stack(loss_list))
+            partial_loss = (x - quant.detach()).pow(2.0).mean()
+            weighted_loss = weights[idx] * partial_loss
+            loss_list.append(weighted_loss)
+
+        commitment_loss = torch.sum(torch.stack(loss_list))
         return commitment_loss
     
     @torch.no_grad()
