@@ -1,0 +1,5 @@
+experiment,name,commitment_weights,description,rfid,epoch,checkpoint_path,num_samples,elapsed_seconds,timestamp
+baseline,Baseline,"[1.0, 1.0, 1.0, 1.0]",Uniform weights,125.35358723432796,10,checkpoints/baseline/config_baseline/09122025_173152/epoch10_model.pt,12942,434.91035,2025-12-10T01:15:41.759108
+coarse,Coarse-First,"[4.0, 2.0, 1.0, 0.5]",Emphasize early codebooks,104.33049708490313,10,checkpoints/coarse/config_coarse/09122025_191747/epoch10_model.pt,12942,429.381922,2025-12-10T01:22:55.261391
+fine,Fine-First,"[0.5, 1.0, 2.0, 4.0]",Emphasize later codebooks,116.37494065797028,10,checkpoints/fine/config_fine/09122025_210341/epoch10_model.pt,12942,433.416059,2025-12-10T01:30:12.822187
+mid,Mid-Focus,"[0.5, 1.0, 1.0, 0.5]",Emphasize middle codebooks,121.91145985901719,10,checkpoints/mid/config_mid/09122025_224941/epoch10_model.pt,12942,434.988816,2025-12-10T01:37:32.069168

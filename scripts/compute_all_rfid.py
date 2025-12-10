@@ -84,7 +84,7 @@ def setup_logging(log_dir: Path) -> logging.Logger:
 
 def find_best_checkpoint(checkpoint_dir: Path) -> Path:
     """Find the best/latest checkpoint in the directory."""
-    checkpoints = list(checkpoint_dir.glob("epoch*_model.pt"))
+    checkpoints = list(checkpoint_dir.glob("**/epoch*_model.pt"))
 
     if not checkpoints:
         raise FileNotFoundError(f"No checkpoints found in {checkpoint_dir}")
